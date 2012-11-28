@@ -1,0 +1,3 @@
+sum start 1000
+first lda zero
+ sta max
