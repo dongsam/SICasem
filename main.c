@@ -52,8 +52,13 @@ int main(int argc,char *argv[]){
 							printf("%c 1\n",tmpChar);
 							tmpWord[i++]=tmpChar;
 						}else{
-							tmpWord[i++]='\0';
-							break;
+							if(i==0){
+								continue;
+							}
+							else{
+								tmpWord[i++]='\0';
+								break;
+							}
 						}
 					}else break;
 				}
@@ -71,12 +76,17 @@ int main(int argc,char *argv[]){
 							printf("%c 2\n",tmpChar);
 							tmpWord[i++]=tmpChar;
 						}else{
-							tmpWord[i++]='\0';
-							break;
+							if(i==0){
+								continue;
+							}
+							else{
+								tmpWord[i++]='\0';
+								break;
+							}
 						}
 					}else break;
 				}
-				if(strlen(tmpInst)<1){
+				if(!strcmp(tmpInst,"")){
 					strcpy(tmpInst,tmpWord);
 				}else{
 					strcpy(tmpOp1,tmpWord);
@@ -90,8 +100,13 @@ int main(int argc,char *argv[]){
 							printf("%c 3\n",tmpChar);
 							tmpWord[i++]=tmpChar;
 						}else{
-							tmpWord[i++]='\0';
-							break;
+							if(i==0){
+								continue;
+							}
+							else{
+								tmpWord[i++]='\0';
+								break;
+							}
 						}
 					}else break;
 				}
