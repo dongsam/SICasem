@@ -1,5 +1,5 @@
-sum	 START 1000
+sum	 start 1000
 first   lda	 zero
- STA max
+ sta max
 comp sum first
 lda value,x

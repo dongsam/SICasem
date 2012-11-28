@@ -81,3 +81,12 @@ void sicPrint(SIC *sic){
 		printf("\n");
 	}
 }
+
+
+char *toUpper(char *str){
+    char *newstr, *p;
+    p = newstr = strdup(str);
+    while(*p++=toupper(*p));
+
+    return newstr;
+}

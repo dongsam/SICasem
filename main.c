@@ -62,7 +62,7 @@ int main(int argc,char *argv[]){
 						}
 					}else break;
 				}
-				if(checkInst(tmpWord)){
+				if(checkInst(toUpper(tmpWord))){
 					strcpy(tmpInst,tmpWord);
 				}else{
 					strcpy(tmpLabel,tmpWord);
