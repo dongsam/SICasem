@@ -1,5 +1,6 @@
-sum	 start 1000
-first   lda	 zero
+sum	 start 0
+first   +lda	 zero
  sta max
-comp sum first
-lda value,x
+loop ldx index
+ lda value,x
+ comp max

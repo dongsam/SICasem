@@ -1,4 +1,5 @@
 #include "sicasem.h"
+
 int main(int argc,char *argv[]){
 	if ( argc < 2 ) {
         printf("프로그램 인수로 소스 파일명을 입력하세요\n");
@@ -7,14 +8,17 @@ int main(int argc,char *argv[]){
 
     char buffer[512];
 
-	printf("LAD ia %d \n",checkInst("LDA"));
+	checkInstFormat("+add");
+
 	SIC sic;
 	sicInit(&sic);
 
+	SymbolTable symbolTable;
+	symbolTableInit(&symbolTable);
+
+
 	//lineAdd(&sic,"sum","start","2000",NULL);
 
-	printf("%d\n",sic.startMemory);
-	printf("%d\n",sic.lineCount);	
 
 	FILE *source;
 	source = fopen(argv[1],"r");
@@ -36,16 +40,17 @@ int main(int argc,char *argv[]){
 
 	while( !feof(source)){
 		
-		//while(tmpChar = fgetc(source)){
-		//	if(tmpChar!='\n'){
-				line++;
+		
+			//if(tmpChar!='\n'){
+				
 				printf("-----------\n");
 				char tmpLabel[10]="";
 				char tmpInst[10]="";
 				char tmpOp1[10]="";
-				char tmpOp2[10]="";
+				char tmpComment[150]="";
+				int memorySize=0;
 				i=0;
-				strcpy(tmpWord,"");
+				strClean(tmpWord);
 				while(tmpChar = fgetc(source)){
 					if(tmpChar!='\n' && !feof(source) ){
 						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
@@ -66,34 +71,38 @@ int main(int argc,char *argv[]){
 					strcpy(tmpInst,tmpWord);
 				}else{
 					strcpy(tmpLabel,tmpWord);
+
+					//추가
+					i=0;
+					strClean(tmpWord);
+					while(tmpChar = fgetc(source)){
+						if(tmpChar!='\n' && !feof(source)){
+							if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
+								printf("%c 2\n",tmpChar);
+								tmpWord[i++]=tmpChar;
+							}else{
+								if(i==0){
+									continue;
+								}
+								else{
+									tmpWord[i++]='\0';
+									break;
+								}
+							}
+						}else break;
+					}
+					if(!strcmp(tmpInst,"")){
+						strcpy(tmpInst,tmpWord);
+					}else{
+						strcpy(tmpOp1,tmpWord);
+					}	
+					//추가
 				}
 
-				i=0;
-				strcpy(tmpWord,"");
-				while(tmpChar = fgetc(source)){
-					if(tmpChar!='\n' && !feof(source)){
-						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-							printf("%c 2\n",tmpChar);
-							tmpWord[i++]=tmpChar;
-						}else{
-							if(i==0){
-								continue;
-							}
-							else{
-								tmpWord[i++]='\0';
-								break;
-							}
-						}
-					}else break;
-				}
-				if(!strcmp(tmpInst,"")){
-					strcpy(tmpInst,tmpWord);
-				}else{
-					strcpy(tmpOp1,tmpWord);
-				}
+				
 
 				i=0;
-				strcpy(tmpWord,"");
+				strClean(tmpWord);
 				while(tmpChar = fgetc(source)){
 					if(tmpChar!='\n' && !feof(source)){
 						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
@@ -112,13 +121,17 @@ int main(int argc,char *argv[]){
 				}
 				if(strlen(tmpOp1)<1){
 					strcpy(tmpOp1,tmpWord);
-				}else{
-					strcpy(tmpOp2,tmpWord);
 				}
-				
-				printf("label %s  inst %s  op1 %s op2 %s\n",tmpLabel,tmpInst,tmpOp1,tmpOp2);
-				lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpOp2);
-
+				if(1<strlen(tmpInst)){
+					line=line+10;
+					printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
+					memorySize=checkInstFormat(toUpper(tmpInst));
+					lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
+				}
+				if(1<strlen(tmpLabel)){
+					printf("라벨있음 %s \n",tmpLabel);
+					symbolAdd(&symbolTable,line,0,tmpLabel);
+				}	
 		//	}
 		//}
 		//tmpChar = fgetc(source);
@@ -126,6 +139,7 @@ int main(int argc,char *argv[]){
 
 	}
 	sicPrint(&sic);
+	sybolTablePrint(&symbolTable);
 	
 
 
