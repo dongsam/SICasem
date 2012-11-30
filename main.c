@@ -1,5 +1,5 @@
 #include "sicasem.h"
-//main
+//main++
 int main(int argc,char *argv[]){
 	if ( argc < 2 ) {
         printf("프로그램 인수로 소스 파일명을 입력하세요\n");
