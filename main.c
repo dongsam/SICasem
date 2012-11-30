@@ -1,5 +1,5 @@
 #include "sicasem.h"
-
+//main
 int main(int argc,char *argv[]){
 	if ( argc < 2 ) {
         printf("프로그램 인수로 소스 파일명을 입력하세요\n");
@@ -51,7 +51,15 @@ int main(int argc,char *argv[]){
 				int memorySize=0;
 				i=0;
 				strClean(tmpWord);
+				int firstCheck=0;
+				int noLabelCheck=0;
+
 				while(tmpChar = fgetc(source)){
+					if(firstCheck==0 && (tmpChar==' ' || tmpChar=='\t' )){
+						noLabelCheck=1;
+						break;
+					}
+					firstCheck=1;
 					if(tmpChar!='\n' && !feof(source) ){
 						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
 							printf("%c 1\n",tmpChar);
@@ -70,8 +78,9 @@ int main(int argc,char *argv[]){
 				if(checkInst(toUpper(tmpWord))){
 					strcpy(tmpInst,tmpWord);
 				}else{
-					strcpy(tmpLabel,tmpWord);
-
+					if(noLabelCheck==0){
+						strcpy(tmpLabel,tmpWord);
+					}
 					//추가
 					i=0;
 					strClean(tmpWord);
@@ -122,15 +131,15 @@ int main(int argc,char *argv[]){
 				if(strlen(tmpOp1)<1){
 					strcpy(tmpOp1,tmpWord);
 				}
-				if(1<strlen(tmpInst)){
-					line=line+10;
+				if(1<=strlen(tmpInst)){
+					line=line+1;
 					printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
 					memorySize=checkInstFormat(toUpper(tmpInst));
 					lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
 				}
 				if(1<strlen(tmpLabel)){
 					printf("라벨있음 %s \n",tmpLabel);
-					symbolAdd(&symbolTable,line,0,tmpLabel);
+					symbolAdd(&symbolTable,line,sic.pc-memorySize,tmpLabel);
 				}	
 		//	}
 		//}

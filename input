@@ -1,6 +1,6 @@
-sum	 start 0
+sum	 starti 1000
 first   +lda	 zero
  sta max
 loop ldx index
- lda value,x
- comp max
+lda value,x
+comp max

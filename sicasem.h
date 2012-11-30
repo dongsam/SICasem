@@ -37,7 +37,8 @@ void lineAdd(SIC *sic,int line,char *label,char *inst,char *op1,char *comment,in
 	if(nl==NULL) printf("full memory\n");
 	if(sic->startLine==NULL){
 		sic->startLine=nl;
-		sic->startMemory=atoi(op1);
+		//sic->startMemory=atoi(op1);
+		sic->startMemory=(int)strtol(op1, NULL, 16);
 		nl->lineNumber=1;
 		nl->memoryLocation = sic->startMemory;
 		sic->pc= sic->startMemory;
@@ -80,12 +81,12 @@ void sicPrint(SIC *sic){
 	}
 	Line *l = sic->startLine;
 	while(l!=NULL){
-		printf("%-4d",l->lineNumber);
-		printf("%-3x",l->memoryLocation);
+		printf("%-6d",l->lineNumber);
+		printf("%-10x",l->memoryLocation);
 		if(strcmp(l->label,"")){
-			printf("%s\t",l->label);
+			printf("%-5s\t",l->label);
 		}else{
-			printf("\t\t");
+			printf("\t");
 		}
 		printf("%s\t",l->inst);
 		printf("%s\t",l->op1);
