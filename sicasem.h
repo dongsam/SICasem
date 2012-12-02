@@ -154,6 +154,7 @@ void symbolAdd(SymbolTable *st,int defineLine,int defineMemory,char *symbol){
 }
 
 void sybolTablePrint(SymbolTable *st){
+	int i=0;
 	printf("<Cross-reference List>\n");
 	printf("Symbol\tDefLine\tMemory\tUsed\n");
 	printf("----------------------------------\n");
@@ -162,10 +163,14 @@ void sybolTablePrint(SymbolTable *st){
 	}
 	Symbol *s = st->startSymbol;
 	while(s!=NULL){
+		
 		printf("%s\t",s->symbol);
 		printf("%d\t",s->defineLine);
 		printf("%x\t",s->defineMemory);
-		printf("%d\t",s->used);
+		printf("%d번 --> ",s->used);
+		for(i=0; i < s->used; i++){
+			printf("%d ",s->use[i]);
+		}
 		
 		s = s->nextSymbol;
 		printf("\n");
@@ -173,6 +178,94 @@ void sybolTablePrint(SymbolTable *st){
 }
 
 /////////////////symbol table///////////////////
+
+
+
+
+
+
+
+/////////////////2pass symbol used check ///////////////////
+
+
+
+char* symbolFilter(char *sym){
+	char filterdSym[10];
+
+	if(sym[0]=='@'){
+		strcpy(filterdSym,sym+1);
+	}
+	else if(sym[0]=='+'){
+		strcpy(filterdSym,sym+1);
+	}
+	else if(sym[0]=='#'){
+		strcpy(filterdSym,sym+1);
+	}else{
+		strcpy(filterdSym,sym+0);
+	}
+	return filterdSym;
+}
+
+
+
+int checkConst(char *sym){
+	if(sym[0] >='0' && '9' >= sym[0] ){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+int checkIndex(char *sym){
+	int len =strlen(sym);
+	int check=0;
+	while(len--){
+		if(sym[len]==39) check=1;
+	}
+	return check;
+}
+
+
+
+void sybolUse(SymbolTable *st,char* symbol,int line){
+	if(st->startSymbol==NULL){
+		printf("비엇습니다.3\n");
+	}
+	Symbol *s = st->startSymbol;
+	while(s!=NULL){
+		if(!strcmp(s->symbol,symbol)){
+			s->use[s->used++]=line;
+
+			//printf("--- %s, %d  used",symbol,line);
+
+		}
+
+		s = s->nextSymbol;
+	}
+}
+
+void symbolUsedCheck(SIC *sic,SymbolTable *st){
+	printf("//////////2pass symbol used check //////\n");
+	char* filterdSym[10];
+	if(sic->startLine==NULL){
+		printf("비엇습니다.2\n");
+	}
+	Line *l = sic->startLine;
+	while(l!=NULL){
+
+		strcpy(filterdSym,symbolFilter(l->op1));		// 심볼에 +,#,@ 기호 생략 필터링
+		if(!checkConst(filterdSym) && !checkIndex(filterdSym)){		// 상수가아니고, 인덱스가 아닌 심볼들만,
+			printf("%d\t%s",l->lineNumber,filterdSym);
+			sybolUse(st,filterdSym,l->lineNumber);
+		}
+		l = l->nextLine;
+		printf("\n");
+	}
+}
+
+
+
+/////////////////2pass symbol used check///////////////////
 
 
 

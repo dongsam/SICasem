@@ -148,7 +148,7 @@ int main(int argc,char *argv[]){
 
 	}
 	sicPrint(&sic);
-	sybolTablePrint(&symbolTable);
+	//sybolTablePrint(&symbolTable);
 	
 
 
@@ -164,4 +164,10 @@ int main(int argc,char *argv[]){
         printf("%s", buffer);
     }
 */
+
+
+
+
+    symbolUsedCheck(&sic,&symbolTable);
+    sybolTablePrint(&symbolTable);
 }
