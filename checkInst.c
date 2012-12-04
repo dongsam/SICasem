@@ -96,12 +96,9 @@ int checkInstFormat(char *word ){
 	if(format4==1){
 		check=4;
 	}
+
+	
 	
 	return check;
 }
 
-//int main(void){
-//	printf("add %d\n",checkInst("add"));
-//	printf("WD %d\n",checkInst("WD"));
-//	return 0;
-//}

@@ -4,6 +4,11 @@
 #include <stdlib.h>
 
 
+
+char errorText[10000] = "\n-------------------------------\n \t <error List>\n-------------------------------\n";
+char *toUpper(char *str);
+char* itoa2(int val, int base);
+
 typedef struct SICtype{
 	int startMemory;
 	int lineCount;
@@ -43,7 +48,31 @@ void lineAdd(SIC *sic,int line,char *label,char *inst,char *op1,char *comment,in
 		nl->memoryLocation = sic->startMemory;
 		sic->pc= sic->startMemory;
 	}else{
-		nl->memorySize = memorySize;
+		
+
+		
+		if(!strcmp(toUpper(inst),"RESW")){
+			nl->memorySize = 3*atoi(op1);
+		}else if(!strcmp(toUpper(inst),"RESB")){
+			nl->memorySize = atoi(op1);
+		}else if(!strcmp(toUpper(inst),"BYTE")){
+			
+			if(op1[0]=='C'){
+				nl->memorySize = strlen(op1)-3;
+			}else if(op1[0]=='X'){
+				nl->memorySize = (strlen(op1)-3)/2;
+			}else{
+				strcat(errorText,"BYTE inst error\n");
+			}
+
+		}else if(!strcmp(toUpper(inst),"WORD")){
+			nl->memorySize = 3;
+		}else{
+			nl->memorySize = memorySize;
+		}
+
+		
+
 		nl->memoryLocation = sic->pc;
 		sic->pc = nl->memoryLocation + nl->memorySize;
 	}
@@ -228,19 +257,32 @@ int checkIndex(char *sym){
 
 
 void sybolUse(SymbolTable *st,char* symbol,int line){
+	int existCheck=0;
+	char tmpLine[10];
 	if(st->startSymbol==NULL){
 		printf("비엇습니다.3\n");
 	}
+	if(!strcmp(symbol,"X") || !strcmp(symbol,"F") || !strcmp(symbol,"P") || !strcmp(symbol,"C") || !strcmp(symbol,"A") || !strcmp(symbol,"S") || !strcmp(symbol,"C") ){
+		//레지스터는 심볼체크 안해도됨,
+		return;
+	}
+
 	Symbol *s = st->startSymbol;
 	while(s!=NULL){
 		if(!strcmp(s->symbol,symbol)){
 			s->use[s->used++]=line;
-
-			//printf("--- %s, %d  used",symbol,line);
-
+			existCheck = 1;
 		}
 
 		s = s->nextSymbol;
+	}
+	if(existCheck==0){ // 해당 심볼이 심볼테이블에 등록이안된 심볼이면 에러처리
+		//itoa(line,tmpLine,10)
+		strcat(errorText,"Line : ");
+		strcat(errorText,itoa2(line,10));
+		strcat(errorText,"\t\"");
+		strcat(errorText,symbol);
+		strcat(errorText,"\" 은 정의되지 않은 symbol 입니다.\n");
 	}
 }
 
@@ -272,6 +314,24 @@ void symbolUsedCheck(SIC *sic,SymbolTable *st){
 
 
 
+
+
+
+
+
+char* itoa2(int val, int base){
+	
+	static char buf[32] = {0};
+	
+	int i = 30;
+	
+	for(; val && i ; --i, val /= base)
+	
+		buf[i] = "0123456789abcdef"[val % base];
+	
+	return &buf[i+1];
+}
+
 char *toUpper(char *str){
     char *newstr, *p;
     p = newstr = strdup(str);
@@ -288,3 +348,19 @@ char *strClean(char *str){
 	}
 	return str;
 }
+
+char* itoa(int val, int base){
+	
+	static char buf[32] = {0};
+	
+	int i = 30;
+	
+	for(; val && i ; --i, val /= base)
+	
+		buf[i] = "0123456789abcdef"[val % base];
+	
+	return &buf[i+1];
+}
+
+
+
