@@ -110,17 +110,24 @@ void sicPrint(SIC *sic){
 	}
 	Line *l = sic->startLine;
 	while(l!=NULL){
-		printf("%-6d",l->lineNumber);
-		printf("%-10x",l->memoryLocation);
-		if(strcmp(l->label,"")){
-			printf("%-5s\t",l->label);
+		if(0<strlen(l->comment)){			//주석 이면, 주석만출력
+			printf("%-6d          ",l->lineNumber);
+			printf("%s",l->comment);
 		}else{
-			printf("\t");
+			printf("%-6d",l->lineNumber);
+			printf("%-10x",l->memoryLocation);
+			if(strcmp(l->label,"")){
+				printf("%-5s\t",l->label);
+			}else{
+				printf("\t");
+			}
+			printf("%s\t",l->inst);
+			printf("%s\t",l->op1);
+			printf("\t%d",l->memorySize);
+			
+			
+			
 		}
-		printf("%s\t",l->inst);
-		printf("%s\t",l->op1);
-		printf("\t%d",l->memorySize);
-		
 		l = l->nextLine;
 		printf("\n");
 	}
@@ -294,7 +301,10 @@ void symbolUsedCheck(SIC *sic,SymbolTable *st){
 	}
 	Line *l = sic->startLine;
 	while(l!=NULL){
-
+		if(0<strlen(l->comment)){	// 주석이면 건너뛰기
+			l = l->nextLine;
+			continue;
+		}
 		strcpy(filterdSym,symbolFilter(l->op1));		// 심볼에 +,#,@ 기호 생략 필터링
 		if(!checkConst(filterdSym) && !checkIndex(filterdSym)){		// 상수가아니고, 인덱스가 아닌 심볼들만,
 			printf("%d\t%s",l->lineNumber,filterdSym);

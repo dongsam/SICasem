@@ -40,111 +40,126 @@ int main(int argc,char *argv[]){
 	
 
 	while( !feof(source)){
-		
-		
-			//if(tmpChar!='\n'){
-				
-				printf("-----------\n");
-				char tmpLabel[10]="";
-				char tmpInst[10]="";
-				char tmpOp1[10]="";
-				char tmpComment[150]="";
-				int memorySize=0;
-				i=0;
-				strClean(tmpWord);
-				int firstCheck=0;
-				int noLabelCheck=0;
 
-				while(tmpChar = fgetc(source)){
-					if(firstCheck==0 && (tmpChar==' ' || tmpChar=='\t' )){
-						noLabelCheck=1;
+
+	
+		printf("-----------\n");
+		char tmpLabel[10]="";
+		char tmpInst[10]="";
+		char tmpOp1[10]="";
+		char tmpComment[150]="";
+		int memorySize=0;
+		i=0;
+		strClean(tmpWord);
+		int firstCheck=0;
+		int noLabelCheck=0;
+		int commentCheck=0;
+
+		while(tmpChar = fgetc(source)){
+			if(firstCheck==0 && (tmpChar==' ' || tmpChar=='\t' )){
+				noLabelCheck=1;
+				break;
+			}
+			if(firstCheck ==0 && tmpChar == '.'){		// 주석 체크
+				commentCheck=1;
+				line = line + 1;
+				tmpComment[i++] = tmpChar;
+				while(tmpChar = fgetc(source)){			
+					if(tmpChar!='\n' && !feof(source)){
+						tmpComment[i++] = tmpChar;
+					}else{
+						tmpWord[i++]='\0';
 						break;
 					}
-					firstCheck=1;
-					if(tmpChar!='\n' && !feof(source) ){
-						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-							printf("%c 1\n",tmpChar);
-							tmpWord[i++]=tmpChar;
-						}else{
-							if(i==0){
-								continue;
-							}
-							else{
-								tmpWord[i++]='\0';
-								break;
-							}
-						}
-					}else break;
 				}
-				if(checkInst(toUpper(tmpWord))){
-					strcpy(tmpInst,tmpWord);
+				lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
+				break;	
+			}
+			firstCheck=1;
+			if(tmpChar!='\n' && !feof(source) ){
+				if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
+					printf("%c 1\n",tmpChar);
+					tmpWord[i++]=tmpChar;
 				}else{
-					if(noLabelCheck==0){
-						strcpy(tmpLabel,tmpWord);
+					if(i==0){
+						continue;
 					}
-					//추가
-					i=0;
-					strClean(tmpWord);
-					while(tmpChar = fgetc(source)){
-						if(tmpChar!='\n' && !feof(source)){
-							if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-								printf("%c 2\n",tmpChar);
-								tmpWord[i++]=tmpChar;
-							}else{
-								if(i==0){
-									continue;
-								}
-								else{
-									tmpWord[i++]='\0';
-									break;
-								}
-							}
-						}else break;
+					else{
+						tmpWord[i++]='\0';
+						break;
 					}
-					if(!strcmp(tmpInst,"")){
-						strcpy(tmpInst,tmpWord);
+				}
+			}else break;
+		}
+		if(commentCheck){		// 주석이면 다음줄 해석 
+			continue;
+		}
+		if(checkInst(toUpper(tmpWord))){
+			strcpy(tmpInst,tmpWord);
+		}else{
+			if(noLabelCheck==0){
+				strcpy(tmpLabel,tmpWord);
+			}
+			//추가
+			i=0;
+			strClean(tmpWord);
+			while(tmpChar = fgetc(source)){
+				if(tmpChar!='\n' && !feof(source)){
+					if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
+						printf("%c 2\n",tmpChar);
+						tmpWord[i++]=tmpChar;
 					}else{
-						strcpy(tmpOp1,tmpWord);
-					}	
-					//추가
-				}
-
-				
-
-				i=0;
-				strClean(tmpWord);
-				while(tmpChar = fgetc(source)){
-					if(tmpChar!='\n' && !feof(source)){
-						if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-							printf("%c 3\n",tmpChar);
-							tmpWord[i++]=tmpChar;
-						}else{
-							if(i==0){
-								continue;
-							}
-							else{
-								tmpWord[i++]='\0';
-								break;
-							}
+						if(i==0){
+							continue;
 						}
-					}else break;
+						else{
+							tmpWord[i++]='\0';
+							break;
+						}
+					}
+				}else break;
+			}
+			if(!strcmp(tmpInst,"")){
+				strcpy(tmpInst,tmpWord);
+			}else{
+				strcpy(tmpOp1,tmpWord);
+			}	
+			//추가
+		}
+
+		
+
+		i=0;
+		strClean(tmpWord);
+		while(tmpChar = fgetc(source)){
+			if(tmpChar!='\n' && !feof(source)){
+				if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
+					printf("%c 3\n",tmpChar);
+					tmpWord[i++]=tmpChar;
+				}else{
+					if(i==0){
+						continue;
+					}
+					else{
+						tmpWord[i++]='\0';
+						break;
+					}
 				}
-				if(strlen(tmpOp1)<1){
-					strcpy(tmpOp1,tmpWord);
-				}
-				if(1<=strlen(tmpInst)){
-					line=line+1;
-					printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
-					memorySize=checkInstFormat(toUpper(tmpInst));
-					lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
-				}
-				if(1<strlen(tmpLabel)){
-					printf("라벨있음 %s \n",tmpLabel);
-					symbolAdd(&symbolTable,line,sic.pc-memorySize,tmpLabel);
-				}	
-		//	}
-		//}
-		//tmpChar = fgetc(source);
+			}else break;
+		}
+		if(strlen(tmpOp1)<1){
+			strcpy(tmpOp1,tmpWord);
+		}
+		if(1<=strlen(tmpInst)){
+			line=line+1;
+			printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
+			memorySize=checkInstFormat(toUpper(tmpInst));
+			lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
+		}
+		if(1<strlen(tmpLabel)){
+			printf("라벨있음 %s \n",tmpLabel);
+			symbolAdd(&symbolTable,line,sic.pc-memorySize,tmpLabel);
+		}	
 
 
 	}
