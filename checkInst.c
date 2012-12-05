@@ -69,7 +69,7 @@ int checkInstFormat(char *word ){
 		strcpy(newWord,word+0);
 	}
 
-	printf("~~~~~~~~~~~%s\n",newWord);
+	//printf("~~~~~~~~~~~%s\n",newWord);
 
 	
 	for(i=0;i<6;i++){
@@ -96,8 +96,6 @@ int checkInstFormat(char *word ){
 	if(format4==1){
 		check=4;
 	}
-
-	
 	
 	return check;
 }

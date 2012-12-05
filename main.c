@@ -43,7 +43,7 @@ int main(int argc,char *argv[]){
 
 
 	
-		printf("-----------\n");
+		//printf("-----------\n");
 		char tmpLabel[10]="";
 		char tmpInst[10]="";
 		char tmpOp1[10]="";
@@ -78,7 +78,7 @@ int main(int argc,char *argv[]){
 			firstCheck=1;
 			if(tmpChar!='\n' && !feof(source) ){
 				if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-					printf("%c 1\n",tmpChar);
+					//printf("%c 1\n",tmpChar);
 					tmpWord[i++]=tmpChar;
 				}else{
 					if(i==0){
@@ -106,7 +106,7 @@ int main(int argc,char *argv[]){
 			while(tmpChar = fgetc(source)){
 				if(tmpChar!='\n' && !feof(source)){
 					if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-						printf("%c 2\n",tmpChar);
+						//printf("%c 2\n",tmpChar);
 						tmpWord[i++]=tmpChar;
 					}else{
 						if(i==0){
@@ -134,7 +134,7 @@ int main(int argc,char *argv[]){
 		while(tmpChar = fgetc(source)){
 			if(tmpChar!='\n' && !feof(source)){
 				if(tmpChar!='\0' && tmpChar!=' ' && tmpChar!='\t'){
-					printf("%c 3\n",tmpChar);
+					//printf("%c 3\n",tmpChar);
 					tmpWord[i++]=tmpChar;
 				}else{
 					if(i==0){
@@ -152,13 +152,15 @@ int main(int argc,char *argv[]){
 		}
 		if(1<=strlen(tmpInst)){
 			line=line+1;
-			printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
+			//printf("label %s  inst %s  op1 %s comment %s\n",tmpLabel,tmpInst,tmpOp1,tmpComment);
 			memorySize=checkInstFormat(toUpper(tmpInst));
 			lineAdd(&sic,line,tmpLabel,tmpInst,tmpOp1,tmpComment,memorySize);
 		}
 		if(1<strlen(tmpLabel)){
-			printf("라벨있음 %s \n",tmpLabel);
-			symbolAdd(&symbolTable,line,sic.pc-memorySize,tmpLabel);
+			//printf("라벨있음 %s \n",tmpLabel);
+			//symbolAdd(&symbolTable,line,sic.pc-memorySize,tmpLabel);
+			symbolAdd(&symbolTable,line,sic.lastLocation,tmpLabel);
+			
 		}	
 
 
@@ -186,5 +188,7 @@ int main(int argc,char *argv[]){
 
     symbolUsedCheck(&sic,&symbolTable);
     sybolTablePrint(&symbolTable);
+    format4Check(&sic,&symbolTable);
     printf("%s",errorText);
+    
 }
